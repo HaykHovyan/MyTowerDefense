@@ -13,6 +13,13 @@ public class Game : MonoBehaviour
 
     [SerializeField] Enemy enemyPrefab;
 
+    [SerializeField, FloatRangeSlider(0.5f, 2)]
+    FloatRange scale = new FloatRange(1f);
+    [SerializeField, FloatRangeSlider(-0.4f, 0.4f)]
+    FloatRange pathOffset = new FloatRange(0f);
+    [SerializeField, FloatRangeSlider(0.5f, 2)]
+    FloatRange enemySpeed = new FloatRange(1f);
+
     List<Enemy> enemies = new List<Enemy>();
 
     float spawnProgress=0;
@@ -58,9 +65,11 @@ public class Game : MonoBehaviour
     {
         GameTile spawnPoint = board.GetSpawnPointByIndex(Random.Range(0,board.spawnCount));
         Enemy enemy = Instantiate(enemyPrefab);
+        float randomScale = scale.RandomValueInRange;
+        enemy.model.localScale = new Vector3(randomScale, randomScale, randomScale);
         enemy.transform.localPosition = spawnPoint.transform.localPosition;
         enemies.Add(enemy);
-        enemy.OnSummon(spawnPoint);
+        enemy.OnSummon(spawnPoint, pathOffset.RandomValueInRange, enemySpeed.RandomValueInRange);
     }
 
     public void DestroyEnemy(Enemy enemy)

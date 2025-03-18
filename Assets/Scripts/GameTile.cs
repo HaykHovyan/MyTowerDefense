@@ -11,10 +11,11 @@ public class GameTile : MonoBehaviour
     public Vector3 ExitPoint;
     public Direction PathDirection;
     public bool HasPath => distance != int.MaxValue;
+    public bool BlocksPath => Type == GameTileContentType.Wall || Type == GameTileContentType.Tower || Type == GameTileContentType.Mortar;
 
     public GameTileContentType Type;
 
-    public GameObject WallArt, DestArt, SpawnArt;
+    public GameObject WallArt, DestArt, SpawnArt, TowerArt, MortarArt;
 
     public bool isAlternative;
     int distance;
@@ -56,7 +57,7 @@ public class GameTile : MonoBehaviour
      
     GameTile GrowPathTo(GameTile neighbor, Direction direction)
     {
-        if (neighbor == null||neighbor.HasPath||neighbor.Type==GameTileContentType.Wall)
+        if (neighbor == null||neighbor.HasPath||BlocksPath)
             return null;
         neighbor.distance = distance + 1;
         neighbor.nextOnPath = this;
@@ -101,12 +102,18 @@ public class GameTile : MonoBehaviour
         WallArt.SetActive(false);
         DestArt.SetActive(false);
         SpawnArt.SetActive(false);
+        TowerArt.SetActive(false);
+        MortarArt.SetActive(false);
         if (type == GameTileContentType.Wall)
             WallArt.SetActive(true);
         if (type==GameTileContentType.Destination) 
             DestArt.SetActive(true);
         if (type == GameTileContentType.EnemySpawn)
-            SpawnArt.SetActive(true);
+            SpawnArt.SetActive(true); 
+        if (type == GameTileContentType.Tower)
+            TowerArt.SetActive(true);
+        if (type == GameTileContentType.Mortar)
+            MortarArt.SetActive(true);
         FindObjectOfType<GameBoard>().OnTileChanged();
     }
 

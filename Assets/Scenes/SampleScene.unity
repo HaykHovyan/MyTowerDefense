@@ -390,6 +390,15 @@ MonoBehaviour:
   board: {fileID: 1186995786}
   spawnSpeed: 1
   enemyPrefab: {fileID: 8969028221049265721, guid: a9209f5987e1b4c42b300a9f21980e57, type: 3}
+  scale:
+    min: 0.5617602
+    max: 0.9227998
+  pathOffset:
+    min: -0.25
+    max: 0.25
+  enemySpeed:
+    min: 0.75
+    max: 1.9545454
 --- !u!4 &1525443071
 Transform:
   m_ObjectHideFlags: 0

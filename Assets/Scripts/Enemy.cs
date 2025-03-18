@@ -1,22 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
-{
-    [SerializeField]
-    Transform model;
-
+{ 
+    public Transform model;
     GameTile tileFrom, tileTo;
     Vector3 positionFrom, positionTo;
     float progress = 0;
+    float progressFactor = 1;
+    float speed = 1;
 
     Direction direction;
     DirectionChange directionChange;
     float directionAngleFrom, directionAngleTo;
+    float pathOffset;
+
+    [SerializeField]
+    Image healthBar;
+    float health;
+    float maxHealth;
+
     public void GameUpdate()
     {
-        progress += Time.deltaTime;
+        healthBar.fillAmount = health / maxHealth;
+        if (health <= 0)
+        {
+            FindObjectOfType<Game>().DestroyEnemy(this);
+            return;
+        }
+        progress += Time.deltaTime * progressFactor * speed;
         if (progress > 1)
         {
             if (tileTo.NextOnPath == null)
@@ -40,13 +54,18 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void OnSummon(GameTile tile)
+    public void OnSummon(GameTile tile, float pathOffset, float speed)
     {
+        this.pathOffset = pathOffset;
+        this.speed = speed;
+
         tileFrom = tile;
         tileTo = tile.NextOnPath;
         
         PrepareIntro();
         progress = 0;
+        health = transform.localScale.x * 100;
+        maxHealth = health;
     }
 
     void PrepareIntro()
@@ -55,8 +74,10 @@ public class Enemy : MonoBehaviour
         positionTo = tileFrom.ExitPoint;
         direction = tileFrom.PathDirection;
         directionChange = DirectionChange.None;
+        model.localPosition = new Vector3(pathOffset, 0, 0);
         directionAngleFrom = directionAngleTo = direction.GetAngle();
         transform.localRotation = direction.GetRotation();
+        progressFactor = 2;
     }
 
     void PrepareNextState()
@@ -79,24 +100,32 @@ public class Enemy : MonoBehaviour
     {
         transform.localRotation = direction.GetRotation();
         directionAngleTo = direction.GetAngle();
-        model.localPosition = Vector3.zero;
+        model.localPosition = new Vector3(pathOffset, 0, 0);
+        progressFactor = 1;
     }
     void PrepareTurnRight()
     {
         directionAngleTo = directionAngleFrom + 90;
-        model.localPosition = new Vector3(-0.5f, 0, 0);
+        model.localPosition = new Vector3(pathOffset - 0.5f, 0, 0);
         transform.localPosition = positionFrom + direction.GetHalfVector();
+        progressFactor = 1 / (Mathf.PI * 0.5f * (0.5f - pathOffset));
     }
     void PrepareTurnLeft()
     {
         directionAngleTo = directionAngleFrom - 90;
-        model.localPosition = new Vector3(0.5f, 0, 0);
+        model.localPosition = new Vector3(pathOffset + 0.5f, 0, 0);
         transform.localPosition = positionFrom + direction.GetHalfVector();
+        progressFactor = 1 / (Mathf.PI * 0.5f * (0.5f - pathOffset));
     }
     void PrepareTurnAround()
     {
         directionAngleTo = directionAngleFrom + 180;
-        model.localPosition = Vector3.zero;
+        model.localPosition = new Vector3(pathOffset - 0.5f, 0, 0);
         transform.localPosition = positionFrom;
+    }
+
+    public void ApplyDamage(float damage)
+    {
+        health -= damage;
     }
 }

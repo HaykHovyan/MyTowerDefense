@@ -7,16 +7,16 @@ public static class DirectionHelper
     static Quaternion[] rotations =
     {
         Quaternion.identity,
-        Quaternion.Euler(0, 180, 0),
         Quaternion.Euler(0, 90, 0),
+        Quaternion.Euler(0, 180, 0),
         Quaternion.Euler(0, 270, 0)
     };
 
     static Vector3[] halfVectors =
     {
         Vector3.forward * 0.5f,
-        Vector3.down * 0.5f,
         Vector3.right * 0.5f,
+        Vector3.back * 0.5f,
         Vector3.left * 0.5f
     };
 
@@ -47,8 +47,8 @@ public static class DirectionHelper
 public enum Direction
 {
     North,
-    South,
     East,
+    South,
     West
 }
 

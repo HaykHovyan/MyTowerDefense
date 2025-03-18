@@ -134,6 +134,14 @@ public class GameBoard : MonoBehaviour
                 _tile.TogglePath(true);
             }
         }
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            HandleTower();
+        }
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            HandleMortar();
+        }
     }
 
     void HandleTouch()
@@ -189,6 +197,48 @@ public class GameBoard : MonoBehaviour
         }
     }
 
+    void HandleTower()
+    {
+        if (Physics.Raycast(TouchRay, out RaycastHit hit, Mathf.Infinity, tileMask))
+        {
+            GameTile tile = hit.collider.GetComponent<GameTile>();
+            if (tile != null)
+            {
+                if (tile.Type == GameTileContentType.Tower)
+                    tile.SetType(GameTileContentType.Empty);
+                else if (tile.Type == GameTileContentType.Empty)
+                    tile.SetType(GameTileContentType.Tower);
+                else if (tile.Type == GameTileContentType.Wall)
+                    tile.SetType(GameTileContentType.Tower);
+            }
+        }
+        else
+        {
+            print("no touch");
+        }
+    }
+
+    void HandleMortar()
+    {
+        if (Physics.Raycast(TouchRay, out RaycastHit hit, Mathf.Infinity, tileMask))
+        {
+            GameTile tile = hit.collider.GetComponent<GameTile>();
+            if (tile != null)
+            {
+                if (tile.Type == GameTileContentType.Tower)
+                    tile.SetType(GameTileContentType.Empty);
+                else if (tile.Type == GameTileContentType.Empty)
+                    tile.SetType(GameTileContentType.Mortar);
+                else if (tile.Type == GameTileContentType.Wall)
+                    tile.SetType(GameTileContentType.Mortar);
+            }
+        }
+        else
+        {
+            print("no touch");
+        }
+    }
+
     public List<GameTile> GetSpawnPoints()
     {
         return spawnPoints; 
@@ -206,5 +256,7 @@ public enum GameTileContentType
     Empty,
     Wall,
     Destination,
-    EnemySpawn
+    EnemySpawn,
+    Tower,
+    Mortar
 }
